@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,7 @@ public class ClienteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> putCliente(@PathVariable Integer id, @RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> putCliente(@PathVariable Integer id, @RequestBody @Valid Cliente cliente) {
         Optional<Cliente> clienteAtualizado = repository.findById(id)
                 .map(atual -> {
                     cliente.setId(atual.getId());
@@ -43,7 +44,7 @@ public class ClienteController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Cliente> postCliente(@RequestBody Cliente cliente) {
+    public ResponseEntity<Cliente> postCliente(@RequestBody @Valid Cliente cliente) {
         Cliente saved = repository.save(cliente);
         return new ResponseEntity<>(saved, HttpStatus.CREATED);
     }
@@ -54,8 +55,7 @@ public class ClienteController {
                 .map(cliente -> {
                     repository.delete(cliente);
                     return Void.TYPE;
-                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+                }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado na base de dados"));
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
 }
